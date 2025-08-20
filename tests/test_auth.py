@@ -1,5 +1,4 @@
 import pytest
-import os
 import json
 from src.auth import verify_credentials, hash_password
 

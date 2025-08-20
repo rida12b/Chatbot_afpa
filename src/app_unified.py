@@ -268,7 +268,7 @@ def search_endpoint():
         logger.info("Envoi de la réponse au client")
         return jsonify(result)
         
-    except Exception as e:
+    except Exception:
         logger.exception("Une erreur est survenue")
         return jsonify({"error": "Une erreur est survenue"}), 500
 

@@ -5,12 +5,8 @@ import docx  # Lecture de Word
 import pandas as pd  # Lecture d'Excel et CSV
 import cv2  # Manipulation d'images pour OCR
 from pptx import Presentation  # Lecture de PPTX
-from PIL import Image  # Gestion des images
 import re  # Pour le nettoyage de texte
-import shutil  # Pour la copie de fichiers
-import json
 from datetime import datetime
-from tqdm import tqdm
 
 # 📂 Chemins des dossiers
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -68,7 +64,7 @@ def extract_text_from_docx(file_path):
                     # Nettoyer le texte
                     text = re.sub(r'[^\x20-\x7E\n]', '', text)
                     text = re.sub(r'\s+', ' ', text).strip()
-                    return text if text else f"[ERREUR DOC] Contenu non extractible"
+                    return text if text else "[ERREUR DOC] Contenu non extractible"
             else:
                 raise docx_error
     except Exception as e:

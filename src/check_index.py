@@ -1,11 +1,10 @@
 import json
 import faiss
-import numpy as np
 
 # Charger l'index FAISS
 print("Chargement de l'index FAISS...")
 index = faiss.read_index('models/faiss_index.bin')
-print(f"Index FAISS chargé avec succès!")
+print("Index FAISS chargé avec succès!")
 print(f"Nombre de vecteurs: {index.ntotal}")
 print(f"Dimension des vecteurs: {index.d}")
 

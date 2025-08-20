@@ -7,7 +7,7 @@ import logging
 from sentence_transformers import SentenceTransformer
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from tqdm import tqdm
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+from azure.storage.blob import ContainerClient
 import fitz  # PyMuPDF pour PDF
 from pptx import Presentation  # Pour PPTX
 import io # Pour manipuler les streams en mémoire
@@ -387,7 +387,7 @@ def main():
                         logger.error("Erreur de décodage JSON pour FINA/name_url_files.json: %s", je)
                 else:
                     logger.warning("Le fichier FINA/name_url_files.json n'a pas été trouvé sur Azure.")
-            except Exception as e:
+            except Exception:
                 logger.exception("Erreur lors de la tentative de lecture de FINA/name_url_files.json depuis Azure")
         else:
             logger.error("DATA_SOURCE=azure mais AZURE_SAS_URL n'est pas défini")
@@ -504,7 +504,7 @@ def main():
 
             logger.info("Fichier traité: %s | chunks: %d", file_label, len(file_chunks))
 
-        except Exception as e:
+        except Exception:
             error_count += 1
             logger.exception("Erreur lors du traitement du fichier %s", file_label)
             continue
