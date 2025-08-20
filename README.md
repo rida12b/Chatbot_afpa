@@ -227,4 +227,4 @@ Lancer la suite de tests avec python -m pytest.
 Résultat : Vous verrez une coche verte (succès) ou une croix rouge (échec) à côté de vos commits sur GitHub, vous informant instantanément de la santé de votre projet.*
 
 ## CI/CD
-Pipeline d'intégration continue activée avec GitHub Actions.
+Pipeline d'intégration continue activée avec GitHub Actions. // .
