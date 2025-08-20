@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Assistant AFPA</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #4CAF50;
+            --primary-light: #80e27e;
+            --primary-dark: #087f23;
+            --secondary-color: #2196F3;
+            --accent-color: #FFC107;
+            --text-primary: #212121;
+            --text-secondary: #757575;
+            --background-light: #f9fafb;
+            --background-dark: #f0f2f5;
+            --card-bg: #ffffff;
+            --border-radius: 16px;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.03);
+            --transition-normal: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 0.25rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .powered-badge {
+            background-color: rgba(76, 175, 80, 0.1);
+            color: var(--primary-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .powered-badge i {
+            font-size: 1rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .user-info i {
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .user-name {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .nav-container {
+            margin-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            padding-top: 1rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background-color: rgba(76, 175, 80, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(76, 175, 80, 0.1);
+            font-weight: 600;
+        }
+
+        .content-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            flex: 1;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .page-title i {
+            color: var(--primary-color);
+        }
+
+        .page-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .faq-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .faq-item {
+            background-color: var(--background-light);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            transition: var(--transition-normal);
+        }
+
+        .faq-question {
+            padding: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .faq-question i {
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .faq-answer {
+            padding: 0 1.25rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .faq-answer-content {
+            padding-bottom: 1.25rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 1.25rem 1.25rem;
+        }
+
+        .faq-item:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-container {
+            width: 80px;
+            height: 80px;
+        }
+        
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            padding: 1rem;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-container {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition-normal);
+            background-color: white;
+            padding-right: 3rem;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .header-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header-container">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="app-title">Assistant AFPA</h1>
+                    <p class="app-subtitle">Posez vos questions sur les procédures et documents AFPA</p>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Connecté en tant que <span class="user-name">{{ user_name }}</span></span>
+                    </div>
+                    <div class="powered-badge">
+                        <i class="fas fa-bolt"></i>
+                        <span>Powered by RAG</span>
+                    </div>
+                    <div class="logo-container">
+                        <img src="/logo" alt="Logo AFPA" onerror="this.style.display='none'">
+                    </div>
+                </div>
+            </div>
+            <div class="nav-container">
+                <div class="nav-links">
+                    <a href="/" class="nav-link"><i class="fas fa-home"></i> Accueil</a>
+                    <a href="/faq" class="nav-link active"><i class="fas fa-question-circle"></i> FAQ</a>
+                    {% if is_admin %}
+                    <a href="/admin" class="nav-link"><i class="fas fa-cog"></i> Administration</a>
+                    {% endif %}
+                    <a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
+                </div>
+            </div>
+        </header>
+
+        <main class="content-container">
+            <h1 class="page-title"><i class="fas fa-question-circle"></i> Foire Aux Questions</h1>
+            <p class="page-description">
+                Retrouvez ici les réponses aux questions les plus fréquemment posées concernant les procédures et outils AFPA.
+                Si vous ne trouvez pas la réponse à votre question, n'hésitez pas à utiliser l'assistant virtuel sur la page d'accueil.
+            </p>
+
+            <div class="search-container">
+                <input type="text" id="faq-search" class="search-input" placeholder="Rechercher dans la FAQ...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+
+            <div class="faq-list">
+                {% for item in faq_items %}
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <span>{{ item.question }}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            {{ item.answer }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>© 2024 AFPA - Assistant virtuel basé sur RAG</p>
+        </footer>
+    </div>
+
+    <script>
+        function toggleFAQ(element) {
+            const faqItem = element.parentElement;
+            faqItem.classList.toggle('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('faq-search');
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                faqItems.forEach(item => {
+                    const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+                    const answer = item.querySelector('.faq-answer-content').textContent.toLowerCase();
+                    
+                    if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                        item.style.display = 'block';
+                        
+                        // Si le terme de recherche est présent, ouvrir automatiquement l'élément
+                        if (searchTerm.length > 2) {
+                            item.classList.add('active');
+                        }
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 

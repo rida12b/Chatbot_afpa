@@ -1,0 +1,52 @@
+# Environnements virtuels
+venv/
+.env
+.venv
+env/
+ENV/
+
+# Fichiers de cache Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Fichiers de développement
+.git
+.github
+.gitignore
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Fichiers de logs
+*.log
+logs/
+
+# Fichiers de documentation
+docs/
+*.md
+!README.md
+
+# Fichiers Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-deploy.sh
+
+# Fichiers de test
+tests/
+notebooks/
+
+# Fichiers temporaires
+.tmp/
+.temp/
+.cache/
+.gradio/
+
+# Fichiers spécifiques au projet qui ne sont pas nécessaires dans l'image
+*.bak
+*.old 

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant AFPA - RAG Combiné</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+
+        .chat-container {
+            height: calc(100vh - 180px);
+            background-color: rgba(255, 255, 255, 0.95);
+            overflow-y: auto;
+        }
+
+        .source-link {
+            color: #2563eb;
+            text-decoration: underline;
+        }
+
+        .source-link:hover {
+            color: #1d4ed8;
+        }
+
+        .loading-dots span {
+            animation: bounce 1.4s infinite;
+        }
+
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-6">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold text-gray-800">Assistant AFPA</h1>
+                <div class="text-sm text-gray-500">RAG Combiné</div>
+            </div>
+            <p class="text-gray-600 mt-2">Posez vos questions sur les procédures AFPA</p>
+        </header>
+
+        <main>
+            <div class="chat-container rounded-lg shadow-md p-4 space-y-4">
+                <div id="chat-messages">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p>Bonjour ! Je suis l'assistant virtuel de l'AFPA. Je peux vous aider à trouver des informations dans la documentation AFPA. Comment puis-je vous aider ?</p>
+                    </div>
+                </div>
+                
+                <div id="loading" class="hidden bg-gray-50 p-4 rounded-lg">
+                    <div class="loading-dots">
+                        Recherche en cours<span>.</span><span>.</span><span>.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <form id="search-form" class="flex">
+                    <input type="text" id="query" name="query" 
+                           placeholder="Posez votre question ici..." 
+                           class="flex-grow px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button type="submit" 
+                            class="px-6 py-2 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <i class="fas fa-search mr-2"></i>Rechercher
+                    </button>
+                </form>
+            </div>
+        </main>
+
+        <footer class="mt-8 text-center text-gray-500 text-sm">
+            <p>© 2024 AFPA - Assistant virtuel RAG</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('search-form');
+            const queryInput = document.getElementById('query');
+            const chatMessages = document.getElementById('chat-messages');
+            const loading = document.getElementById('loading');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const query = queryInput.value.trim();
+                if (!query) return;
+
+                // Ajouter la question de l'utilisateur
+                addMessage(`<div class="font-medium">Question :</div>${query}`, 'user');
+                
+                // Afficher le chargement
+                loading.classList.remove('hidden');
+                
+                try {
+                    const response = await fetch('/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ query })
+                    });
+
+                    if (!response.ok) throw new Error('Erreur réseau');
+                    
+                    const data = await response.json();
+                    
+                    if (data.error) {
+                        addMessage(`Erreur : ${data.error}`, 'error');
+                    } else if (data.response) {
+                        // Construire la réponse
+                        let html = `<div class="space-y-4">`;
+                        
+                        // Réponse principale
+                        html += `<div class="prose">${data.response.answer}</div>`;
+                        
+                        // Sources
+                        if (data.response.sources && data.response.sources.length > 0) {
+                            html += `<div class="mt-4 pt-4 border-t border-gray-200">
+                                <div class="font-medium mb-2">Sources :</div>
+                                <ul class="space-y-2">`;
+                            
+                            data.response.sources.forEach(source => {
+                                html += `<li>
+                                    <a href="${source.url}" target="_blank" class="source-link">
+                                        ${source.title}
+                                    </a>
+                                    <div class="text-sm text-gray-500">Catégorie : ${source.category}</div>
+                                </li>`;
+                            });
+                            
+                            html += `</ul></div>`;
+                        }
+                        
+                        html += `</div>`;
+                        addMessage(html, 'assistant');
+                    }
+                } catch (error) {
+                    addMessage('Désolé, une erreur s\'est produite lors de la recherche.', 'error');
+                } finally {
+                    loading.classList.add('hidden');
+                    queryInput.value = '';
+                }
+            });
+
+            function addMessage(content, type) {
+                const div = document.createElement('div');
+                div.className = `p-4 rounded-lg ${
+                    type === 'user' ? 'bg-blue-50' :
+                    type === 'error' ? 'bg-red-50' :
+                    'bg-gray-50'
+                }`;
+                div.innerHTML = content;
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html> 

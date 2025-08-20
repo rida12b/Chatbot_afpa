@@ -1,0 +1,81 @@
+/* Styles pour les réponses structurées */
+.response-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+    line-height: 1.6;
+    font-size: 1rem;
+    color: #333;
+}
+
+.response-container h4 {
+    color: #2c7a51;
+    margin: 1.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e0e0e0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.intro, .steps, .summary {
+    margin-bottom: 2rem;
+}
+
+.steps ol {
+    padding-left: 1.5rem;
+    list-style-type: decimal;
+}
+
+.steps li {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #2c7a51;
+}
+
+.steps li strong {
+    display: block;
+    color: #2c7a51;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.steps li p {
+    margin: 0.5rem 0;
+    line-height: 1.5;
+}
+
+.source {
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #e0e0e0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.source a {
+    color: #2c7a51;
+    text-decoration: none;
+    border-bottom: 1px dotted #2c7a51;
+    transition: all 0.2s ease;
+}
+
+.source a:hover {
+    color: #1a5c3a;
+    border-bottom: 1px solid #1a5c3a;
+}
+
+.summary {
+    background: #f0f7f4;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 2rem;
+}
+
+.summary p {
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Conserver les styles existants ci-dessous */ 

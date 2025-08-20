@@ -1,0 +1,32 @@
+# Dossiers de données
+chatbot_rag_project/data/doc/
+chatbot_rag_project/data/processed/
+chatbot_rag_project/data/corrupted/
+
+# Fichiers volumineux
+chatbot_rag_project/models/*.bin
+chatbot_rag_project/models/chunks.json
+chatbot_rag_project/models/metadata.pkl
+
+# Environnement virtuel
+venv/
+env/
+ENV/
+
+# Fichiers Python compilés
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Autres fichiers à ignorer
+*.log
+.DS_Store
+
+# Fichiers d'environnement
+.env
+.venv
+venv/
+
+# Fichiers de sortie auto-générés
+repomix-output.xml
+test.md
