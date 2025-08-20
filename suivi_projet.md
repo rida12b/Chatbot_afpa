@@ -4,6 +4,27 @@
 
 ## 🔄 Changelog récent
 
+### 20/08/2025 - Réorganisation et correction de format du README
+- ✅ Modifications apportées :
+  1. Ajout d'espaces entre les badges en en-tête pour un rendu correct.
+  2. Correction de la fermeture du bloc de code listant la structure du projet (ajout de la ligne ``` de fin manquante).
+- 🔍 Résultat :
+  - Rendu Markdown propre sur GitHub/éditeurs (pas d'affichage cassé en fin de section Structure du Projet).
+  - Lecture améliorée du README.
+
+### 20/08/2025 - Ajout de la section Déploiement (Local + Azure)
+- ✅ Modifications apportées :
+  1. Ajout d'une section `8. Déploiement` structurée avec sous-sections 8.1 (Checklist de sécurité), 8.2 (Docker local) et 8.3 (Azure App Service).
+  2. Mise à jour de la table des matières avec les nouvelles ancres.
+  3. Intégration des commandes `az` pour publication d'image ACR, création App Service, montages Azure Files et logs.
+- 🔍 Résultat :
+  - Guide de déploiement complet utilisable immédiatement pour un déploiement local et production Azure.
+  - Cohérence des ancres et rendu Markdown vérifiés.
+
+### 20/08/2025 - Mise à jour de la commande de clonage
+- ✅ Modification : remplacement de `git clone <URL_DU_DEPOT>` par `git clone https://github.com/rida12b/Chatbot_afpa.git` dans le `README.md`.
+- 🎯 Objectif : permettre un démarrage immédiat sans étape manuelle supplémentaire.
+
 ### AJOUT DU JOUR - Intégration de la recherche hybride (vectorielle + mots-clés)
 - **🎯 Objectif :** Améliorer la pertinence des résultats en combinant similarité sémantique (vecteurs) et correspondances exactes (mots-clés).
 - **🛠️ Modifs dans `src/app_unified.py` :**
