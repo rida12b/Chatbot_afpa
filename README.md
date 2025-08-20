@@ -1,136 +1,227 @@
-Chatbot RAG AFPA 🤖
-1. Description
-Ce projet est un chatbot intelligent basé sur une architecture RAG (Retrieval-Augmented Generation). Il est conçu pour analyser et répondre aux questions des utilisateurs en se basant sur une base de connaissances constituée de documents internes de l'AFPA (PDF, DOCX, PPTX, etc.).
-L'application utilise une base de données vectorielle unifiée pour associer directement le contenu des documents à leurs métadonnées (titre, URL, catégorie), garantissant des réponses rapides et des sources fiables.
-2. Fonctionnalités Principales
-📄 Ingestion Multi-Format : Prise en charge de divers types de fichiers, y compris PDF, DOCX, PPTX, et images (via OCR).
-🧠 Base Vectorielle Unifiée : Un seul index FAISS contenant les embeddings des documents et leurs métadonnées associées, y compris les URLs, pour une performance et une cohérence maximales.
-🔍 Recherche Sémantique : Utilisation de modèles de type Sentence-BERT et d'un index FAISS pour trouver les extraits de documents les plus pertinents sémantiquement.
-🤖 Génération de Réponses avec Azure OpenAI : Exploitation de la puissance des modèles de langage d'Azure OpenAI pour synthétiser des réponses claires à partir des documents trouvés.
-🔐 Authentification Utilisateur : Système de connexion sécurisé avec gestion des rôles (Utilisateur, Administrateur).
-🌐 Interface Web Intuitive : Une interface utilisateur moderne et réactive construite avec Flask, proposant des suggestions de questions et un affichage clair des réponses et de leurs sources.
-🐳 Déploiement Simplifié avec Docker : Scripts de déploiement pour Windows (PowerShell) et Linux/macOS pour une mise en service rapide et facile.
+*Chatbot RAG de l'AFPA : Documentation Technique Complète
+![alt text](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
+![alt text](https://img.shields.io/badge/Flask-black?logo=flask)
+![alt text](https://img.shields.io/badge/Docker-blue?logo=docker)
+![alt text](https://img.shields.io/badge/Azure-blue?logo=microsoftazure)
+![alt text](https://img.shields.io/badge/CI-Passing-brightgreen?logo=githubactions)
+Table des Matières
+Présentation du Projet
+Fonctionnalités Clés
+Architecture du Système
+Phase 1 : Indexation (Offline)
+Phase 2 : Requête (Online)
+Structure du Projet
+Installation et Configuration
+Prérequis
+Étape 1 : Configuration de l'Environnement
+Étape 2 : Installation des Dépendances
+Guide d'Utilisation
+Étape 1 : Ingestion des Données
+Étape 2 : Lancement de l'Application
+Tests Automatisés
+Déploiement en Production
+Checklist de Sécurité
+Déploiement avec Docker (Recommandé)
+Maintenance et Mises à Jour
+Mise à Jour de la Base de Connaissances
+Consultation des Logs
+Intégration Continue (CI/CD)
+1. Présentation du Projet
+Ce projet est un assistant conversationnel intelligent (chatbot) basé sur une architecture RAG (Retrieval-Augmented Generation). Sa mission est de fournir des réponses précises et contextuelles aux questions des collaborateurs de l'AFPA en s'appuyant exclusivement sur une base de documents d'entreprise validés.
+Il est conçu pour être déployable en local pour le développement et prêt pour la production sur une infrastructure cloud comme Azure, grâce à une configuration flexible et une conteneurisation Docker.
+2. Fonctionnalités Clés
+Ingestion de Données Polyvalente : Capacité à traiter de multiples formats de fichiers (PDF, PPTX, DOCX, etc.) depuis des sources locales ou un stockage cloud (Azure Blob Storage).
+Recherche Hybride Avancée : Combine la recherche sémantique (vectorielle) pour comprendre l'intention et la recherche par mots-clés pour la précision, garantissant une pertinence maximale des résultats.
+Architecture Unifiée et Performante : Utilise une base de données vectorielle unique qui lie le contenu, les métadonnées et les URLs des documents dès l'indexation, simplifiant la logique et accélérant les temps de réponse.
+Sécurité et Authentification : Système de connexion robuste avec gestion des rôles (Utilisateur, Administrateur) et protection des routes.
+Prêt pour la Production : Déploiement simplifié via Docker, gestion centralisée de la configuration (.env), logging structuré et tests automatisés.
+CI/CD Intégrée : Un workflow GitHub Actions est inclus pour exécuter automatiquement les tests à chaque modification du code, garantissant la stabilité du projet.
 3. Architecture du Système
-L'architecture actuelle a été simplifiée pour améliorer la performance et la maintenabilité.
-Phase d'Indexation (Offline) :
-Le script create_unified_vectordb.py orchestre le processus :
-Les documents du dossier data/documents sont analysés et leur texte est extrait (ingestion.py).
-Le texte est découpé en "chunks" (morceaux).
-Les métadonnées (y compris les URLs de Url_nom_FINA.json) sont associées à chaque chunk.
-Les chunks sont transformés en vecteurs (embeddings) via un modèle Sentence-Transformer.
-Un index FAISS (unified_index.bin), un fichier de chunks (unified_chunks.json) et un fichier de métadonnées (unified_metadata.pkl) sont créés et sauvegardés dans le dossier models/.
-Phase d'Interrogation (Online) :
-L'application app_unified.py est lancée.
-Un utilisateur pose une question via l'interface web.
-La question est transformée en vecteur.
-L'index FAISS est interrogé pour trouver les chunks les plus similaires.
-Les chunks pertinents, avec leurs métadonnées, sont utilisés comme contexte pour une requête à l'API Azure OpenAI.
-Le modèle de langage génère une réponse structurée qui est ensuite affichée à l'utilisateur.
+L'architecture est divisée en deux phases distinctes pour optimiser la performance et la maintenabilité.
+Phase 1 : Indexation (Offline)
+Ce processus transforme les documents bruts en une base de connaissances interrogeable. Il est exécuté par le script src/create_unified_vectordb.py.
+Source des Données : Le script lit les documents soit depuis le dossier local data/documents/, soit depuis un conteneur Azure Blob Storage, en fonction de la variable DATA_SOURCE dans le fichier .env.
+Extraction de Texte : Le contenu textuel de chaque document est extrait (la logique est dans src/ingestion.py).
+Chunking : Le texte est divisé en petits morceaux de texte (chunks) pertinents.
+Enrichissement des Métadonnées : Chaque chunk est associé à des métadonnées (titre du document source, catégorie, et URL si disponible).
+Vectorisation (Embedding) : Les chunks sont transformés en vecteurs numériques via un modèle Sentence-Transformer.
+Stockage : Les vecteurs sont stockés dans un index FAISS pour une recherche ultra-rapide. Les chunks et métadonnées sont sauvegardés dans des fichiers .json et .pkl.
+Artefacts produits dans le dossier models/ : unified_index.bin, unified_chunks.json, unified_metadata.pkl.
+Phase 2 : Requête (Online)
+Ce processus se déroule en temps réel lorsqu'un utilisateur interagit avec l'application. Il est géré par src/app_unified.py.
+Requête Utilisateur : L'utilisateur envoie une question via l'interface web Flask.
+Recherche Hybride : La question est utilisée pour interroger la base de connaissances :
+Une recherche vectorielle est effectuée sur l'index FAISS pour trouver les chunks sémantiquement similaires.
+Une recherche par mots-clés est effectuée pour trouver les correspondances exactes.
+Les résultats sont fusionnés et reclassés pour une pertinence optimale.
+Génération du Contexte : Les chunks les plus pertinents et leurs métadonnées sont assemblés pour former un contexte.
+Appel au LLM : Le contexte et la question initiale sont envoyés à Azure OpenAI.
+Génération de la Réponse : Le LLM synthétise une réponse structurée en HTML en se basant uniquement sur le contexte fourni.
+Affichage : La réponse HTML est transmise à l'interface utilisateur et affichée dans le navigateur.
 4. Structure du Projet
-Generated code
-repomix-output/
+code
+Code
+chatbot_rag_project/
 │
-├── data/
-│   ├── documents/         # (À créer) Placer les documents sources ici.
-│   ├── processed/         # Textes extraits par ingestion.py.
-│   └── url/               # Fichiers JSON de mapping d'URLs.
+├── .github/workflows/      # Workflows d'intégration continue (CI/CD)
+│   └── ci.yml              # Exécute les tests automatiquement
 │
-├── models/                # Contient la base de données vectorielle unifiée.
+├── data/                   # Données non versionnées (utilisées en local)
+│   └── documents/          # (À créer) Placer ici les documents sources
 │
-├── src/
-│   ├── templates/         # Fichiers HTML pour l'interface.
-│   ├── app_unified.py     # ✅ Application principale (Flask).
-│   ├── create_unified_vectordb.py # ✅ Script pour créer la base vectorielle.
-│   ├── ingestion.py       # Logique d'extraction de texte des fichiers.
-│   ├── auth.py            # Gestion de l'authentification.
-│   └── ...
+├── models/                 # Base de connaissances générée (non versionnée)
 │
-├── Dockerfile             # Fichier pour construire l'image Docker.
-├── docker-compose.yml     # Configuration pour le déploiement multi-conteneurs.
-├── docker-deploy.sh       # Script de déploiement pour Linux/macOS.
-├── docker-deploy.ps1      # Script de déploiement pour Windows PowerShell.
-├── requirements.txt       # Dépendances Python.
-└── README.md              # Ce fichier.
-Use code with caution.
-5. Technologies Utilisées
-Backend : Flask
-Recherche Vectorielle : FAISS (Facebook AI Similarity Search)
-Embeddings : Sentence-Transformers (all-MiniLM-L6-v2)
-Génération de Langage : Azure OpenAI
-Traitement de Documents : PyMuPDF (PDF), python-docx (Word), python-pptx (PowerPoint), Tesseract (OCR)
-Déploiement : Docker, Docker Compose
-6. Prérequis
+├── src/                    # Code source de l'application
+│   ├── static/             # Fichiers CSS et JavaScript
+│   │   └── js/main.js
+│   ├── templates/          # Fichiers HTML (Flask/Jinja2)
+│   ├── app_unified.py      # ✅ Application web Flask principale
+│   ├── auth.py             # Module d'authentification et de gestion des utilisateurs
+│   ├── create_unified_vectordb.py # ✅ Script d'ingestion et d'indexation
+│   └── ingestion.py        # Fonctions d'extraction de texte
+│
+├── tests/                  # Tests automatisés
+│   └── test_auth.py        # Tests unitaires pour le module d'authentification
+│
+├── .env.example            # Template pour le fichier de configuration
+├── docker-compose.yml      # Configuration pour le déploiement Docker
+├── Dockerfile              # Instructions pour construire l'image Docker
+├── pyproject.toml          # Fichier de configuration du projet et de pytest
+├── requirements.txt        # Dépendances Python
+└── README.md               # Cette documentation
+5. Installation et Configuration
+Prérequis
+Git
 Python 3.10+
-Docker et Docker Compose
+Docker & Docker Compose
 Tesseract OCR :
-Sous Windows : winget install --id=UB-Mannheim.TesseractOCR
+Sous Windows (PowerShell) : winget install --id=UB-Mannheim.TesseractOCR
 Sous Linux (Debian/Ubuntu) : sudo apt-get install tesseract-ocr
-Compte Azure OpenAI avec un point de terminaison et une clé API.
-7. Installation et Lancement
-Étape 1 : Cloner le Dépôt et Configurer l'Environnement
-Clonez ce dépôt sur votre machine.
-
-Copiez le fichier d'exemple d'environnement et remplissez-le avec vos valeurs:
-- `cp .env.example .env` (Linux/macOS) ou `copy .env.example .env` (Windows)
-- Le fichier `.env` est la SEULE source de vérité pour les secrets et configurations (ne rien coder en dur).
-
-Configuration de la source de données via `DATA_SOURCE`:
-- `DATA_SOURCE=local`: le script d'ingestion lit les fichiers locaux. Placez les documents sources dans `data/documents/` (des sous-dossiers sont acceptés). Aucune configuration Azure n'est requise.
-- `DATA_SOURCE=azure`: le script d'ingestion lit les blobs Azure. Renseignez impérativement `AZURE_SAS_URL` (URL SAS du conteneur). Les variables Azure OpenAI (`AZURE_INFERENCE_SDK_ENDPOINT`, `AZURE_OPENAI_API_KEY`, `DEPLOYMENT_NAME`) doivent également être définies pour la génération des réponses.
-Étape 2 : Préparer les Données
-Créez le dossier data/documents.
-Placez tous les documents que le chatbot doit connaître dans data/documents (il peut y avoir des sous-dossiers).
-Étape 3 : Choisir une Méthode de Lancement
-Méthode A : Déploiement avec Docker (Recommandé)
-Note importante : Le Dockerfile du projet pointe vers l'ancien script app.py. Vous devez le corriger manuellement avant de construire l'image.
-Ouvrez le fichier Dockerfile et modifiez la dernière ligne :
-Remplacer : CMD ["python", "src/app.py"]
-Par : CMD ["python", "src/app_unified.py"]
-Construire la base de données vectorielle :
-Pour que Docker puisse inclure la base de données dans l'image, vous devez la créer une première fois localement.
-Installez les dépendances : pip install -r requirements.txt
-Lancez le script de création : python src/create_unified_vectordb.py
-Construire et lancer les conteneurs Docker :
-Sous Linux/macOS :
-Generated bash
-# Rendre le script exécutable
-chmod +x docker-deploy.sh
-# Construire l'image
-./docker-deploy.sh build
-# Démarrer le conteneur
-./docker-deploy.sh start
-Use code with caution.
+Étape 1 : Configuration de l'Environnement
+Clonez le dépôt :
+code
 Bash
-Sous Windows (dans PowerShell) :
-Generated powershell
-# Construire l'image
-.\docker-deploy.ps1 build
-# Démarrer le conteneur
-.\docker-deploy.ps1 start
-Use code with caution.
-Powershell
-Méthode B : Lancement Local
-Installer les dépendances :
-Generated bash
+git clone <URL_DU_DEPOT>
+cd chatbot_rag_project
+Créez et configurez votre fichier d'environnement :
+Copiez le fichier d'exemple. C'est votre fichier de configuration personnel, il ne doit jamais être partagé ou versionné.
+code
+Bash
+# Sous Linux/macOS
+cp .env.example .env
+
+# Sous Windows
+copy .env.example .env
+Modifiez le fichier .env avec vos propres valeurs.
+Pour un usage 100% local :
+Assurez-vous que DATA_SOURCE est réglé sur local. Vous n'avez pas besoin de remplir les variables Azure.
+code
+Env
+DATA_SOURCE=local
+FLASK_SECRET_KEY="changez-moi-avec-une-cle-secrete-forte"
+# Les variables Azure peuvent rester vides
+AZURE_INFERENCE_SDK_ENDPOINT=""
+...
+Pour un usage connecté à Azure :
+Réglez DATA_SOURCE sur azure et remplissez toutes les variables Azure.
+code
+Env
+DATA_SOURCE=azure
+FLASK_SECRET_KEY="changez-moi-avec-une-cle-secrete-forte"
+AZURE_INFERENCE_SDK_ENDPOINT="https://..."
+AZURE_OPENAI_API_KEY="..."
+DEPLOYMENT_NAME="..."
+AZURE_SAS_URL="https://..."
+Étape 2 : Installation des Dépendances
+Créez un environnement virtuel et installez les packages requis.
+code
+Bash
+# Créez l'environnement virtuel
+python -m venv venv
+
+# Activez-le
+# Sous Windows (PowerShell)
+# .\venv\Scripts\Activate.ps1
+# Sous Linux/macOS
+# source venv/bin/activate
+
+# Installez les dépendances
 pip install -r requirements.txt
-Use code with caution.
+6. Guide d'Utilisation
+Étape 1 : Ingestion des Données
+Ce script doit être exécuté à chaque fois que vous mettez à jour la base de connaissances.
+Si vous êtes en mode local, assurez-vous que tous vos documents sources (PDF, PPTX, etc.) sont placés dans le dossier data/documents/.
+Lancez le script d'ingestion :
+code
 Bash
-Construire la base de données vectorielle :
-Generated bash
 python src/create_unified_vectordb.py
-Use code with caution.
+Ce processus peut prendre plusieurs minutes. Il va créer ou mettre à jour les fichiers dans le dossier models/.
+Étape 2 : Lancement de l'Application
+Une fois l'ingestion terminée, lancez le serveur web Flask :
+code
 Bash
-Lancer l'application :
-Generated bash
 python src/app_unified.py
-Use code with caution.
-Bash
-8. Utilisation
-Une fois l'application lancée, accédez à http://localhost:7860 dans votre navigateur.
-Utilisez les identifiants par défaut pour vous connecter (créés au premier lancement) :
-Identifiant : admin
+Accédez à l'application dans votre navigateur à l'adresse http://localhost:7860.
+Identifiants par défaut (au premier lancement) :
+Utilisateur : admin
 Mot de passe : admin123
-Utilisez la barre de recherche ou les questions suggérées pour interroger le chatbot. La page d'administration est accessible via le menu pour les utilisateurs avec le rôle admin.
-9. Maintenance
-Pour mettre à jour la base de connaissances du chatbot, ajoutez, modifiez ou supprimez des documents dans le dossier data/documents et relancez le script create_unified_vectordb.py.
-Pour l'historique détaillé des changements et des décisions de conception, consultez le fichier suivi_projet.md.
+7. Tests Automatisés
+Pour garantir la stabilité du code, une suite de tests a été mise en place avec pytest.
+Pourquoi tester ? Les tests vérifient automatiquement que les fonctions critiques (comme l'authentification) se comportent comme prévu. Ils agissent comme un filet de sécurité, vous permettant de modifier le code en toute confiance.
+Comment les lancer ?
+code
+Bash
+# Assurez-vous que votre venv est activé
+python -m pytest -v
+Résultat attendu : Une sortie verte indiquant que tous les tests ont réussi (... passed in ...).
+8. Déploiement en Production
+Le déploiement est simplifié grâce à Docker.
+Checklist de Sécurité
+Avant de déployer, assurez-vous de :
+Changer le mot de passe admin par défaut via l'interface d'administration.
+Générer une clé secrète Flask robuste dans votre fichier .env de production.
+Utiliser un fichier .env de production avec les bonnes informations d'identification Azure et ne jamais le versionner.
+Déploiement avec Docker (Recommandé)
+Pré-requis : Docker et Docker Compose doivent être installés sur le serveur de production.
+Construire l'image Docker :
+Le script de déploiement va lire votre docker-compose.yml et Dockerfile pour construire une image contenant toute votre application et ses dépendances.
+code
+Bash
+# Sous Linux/macOS
+./docker-deploy.sh build
+
+# Sous Windows (PowerShell)
+.\docker-deploy.ps1 build
+Démarrer le conteneur :
+Cette commande lance l'application en arrière-plan.
+code
+Bash
+# Sous Linux/macOS
+./docker-deploy.sh start
+
+# Sous Windows (PowerShell)
+.\docker-deploy.ps1 start
+L'application sera accessible sur le port 7860 de votre serveur.
+9. Maintenance et Mises à Jour
+Mise à Jour de la Base de Connaissances
+Ajoutez, modifiez ou supprimez les fichiers dans votre source de données (data/documents/ pour le local, ou le conteneur Blob pour Azure).
+Relancez le script d'ingestion : python src/create_unified_vectordb.py.
+Redémarrez l'application (ou le conteneur Docker : ./docker-deploy.sh restart) pour qu'elle charge la nouvelle base de connaissances.
+Consultation des Logs
+En local : Les logs s'affichent directement dans le terminal où vous avez lancé python src/app_unified.py.
+Avec Docker : Utilisez la commande suivante pour voir les logs du conteneur en temps réel :
+code
+Bash
+# Sous Linux/macOS
+./docker-deploy.sh logs
+
+# Sous Windows (PowerShell)
+.\docker-deploy.ps1 logs
+10. Intégration Continue (CI/CD)
+Le fichier .github/workflows/ci.yml configure une pipeline d'intégration continue via GitHub Actions.
+Objectif : Garantir que chaque modification poussée sur le dépôt de code ne casse aucune fonctionnalité existante.
+Fonctionnement : À chaque push de code, GitHub va automatiquement :
+Créer un environnement virtuel propre.
+Installer toutes les dépendances.
+Lancer la suite de tests avec python -m pytest.
+Résultat : Vous verrez une coche verte (succès) ou une croix rouge (échec) à côté de vos commits sur GitHub, vous informant instantanément de la santé de votre projet.*
